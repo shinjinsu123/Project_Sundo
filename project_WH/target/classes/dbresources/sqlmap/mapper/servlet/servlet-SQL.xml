@@ -12,4 +12,38 @@
 				1=1
 		]]>
 	</select>
+	
+	<select id="sidonm" resultType="ServletVO">
+		SELECT sd_nm, sd_cd, ST_AsText(ST_Transform(ST_Centroid(geom), 4326)) AS geom 
+        FROM tl_sd
+	</select>
+	
+   <!-- <select id="guList" parameterType="String" resultType="Map">
+	   SELECT REPLACE(sgg_nm, CONCAT(sd_nm, ' '), '') AS sgg_nm
+		FROM tl_sgg WHERE sgg_nm LIKE CONCAT(#{sido}, '%')
+   </select> -->
+   
+   <select id="guList" parameterType="String" resultType="Map">
+      SELECT REPLACE(g.sgg_nm, CONCAT(s.sd_nm, ' '), '') AS sgg_nm, 
+      g.sgg_cd, 
+      ST_AsText(ST_Transform(ST_Centroid(g.geom), 4326)) AS geom 
+      FROM tl_sgg g
+      JOIN tl_sd s ON (s.sd_nm = g.sd_nm)
+      WHERE s.sd_cd = #{sido};
+   </select>
+   
+   <select id="bjdList" parameterType="String" resultType="Map">
+	    SELECT DISTINCT b.bjd_nm, b.bjd_cd, ST_AsText(ST_Transform(ST_Centroid(b.geom), 4326)) AS geom 
+		FROM tl_bjd b 
+		JOIN tl_sgg c ON b.sgg_cd = c.sgg_cd 
+		WHERE c.sgg_cd = #{sgg}
+   </select>
+   
+   <insert id="fileUp" parameterType="list">
+   	  <foreach collection="list" item="item" index="index" separator=";">
+        INSERT INTO shin (sggcd, bjdcd, usage)  
+        VALUES (#{item.sggcd}, #{item.bjdcd}, #{item.usage})
+      </foreach>
+   </insert>
+	
 </mapper>

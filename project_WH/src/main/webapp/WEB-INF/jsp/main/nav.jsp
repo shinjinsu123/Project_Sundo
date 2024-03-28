@@ -1,29 +1,49 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>MENU</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>2DMap</title>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark" id="mainNav">
+<script type="text/javascript" charset="UTF-8">
+$(document).ready(function() {		
+		$("#fileBtn").on("click", function() {
+			let fileName = $('#file').val();
+			alert("!111 " + fileName);
+			if(fileName == ""){
+				alert("파일을 선택해주세요.");
+				return false;
+			}
+			let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+			if(dotName == 'txt'){
+				alert("! " + fileName);
+				$.ajax({
+					url : '/fileUp2.do',
+					type : 'POST',
+					dataType: 'json',
+					data : new FormData($('#form')[0]),
+					cache : false,
+					contentType : false,
+					processData : false,
+					enctype: 'multipart/form-data',
+					success : function(result) {
+						alert(result);
+					},
+					error : function(Data) {
+					}				
+				});
+	
+			}else{
+				alert("확장자가 안 맞으면 멈추기");	
+			}
+			
+			
+		});
+
+	});
+</script>
+
+<nav class="navbar navbar-gray bg-dark" id="mainNav">
 	<div class="d-flex align-items-center" style="text-align: center;">
 		<div>
 			<h3>탄소공간지도시스템</h3>
 		</div>
-		    <div id="menu" style="height: 100%; background-color: #f0f0f0; float: left;">
+		    <div class="container" id="menu" style="height: 100%; background-color: #f0f0f0; float: left;">
                 <!-- 탄소지도 -->
                 <div style="display: flex; align-items: center;">
                     <button type="button" onclick="showCarbonMap()">탄소지도</button>
@@ -39,13 +59,16 @@
             </div>
             
             <div>
-            	<form action="/fileUp" method="post" enctype="multipart/form-data">
-					<input type="file" name="fileUp">
-					<button type="submit">txt 파일 업로드</button>
+            	<form id="form" enctype="multipart/form-data">
+					<input type="file" id="file" name="file" accept="txt">
 				</form>
+					<button type="button" id="fileBtn">파일 전송</button>
             </div>
-		<div>
-			asd
-		</div>
+            <!-- <tbody>
+            <tr>
+                 <th class="active" style="text-align:right"><label class="control-label" for="">파일 업로드</label></th>
+                 <td><input type="file" name="file" id="file" accept=".txt"/></td>
+            </tr>
+            </tbody> -->
 	</div>
 </nav>
