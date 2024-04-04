@@ -41,9 +41,29 @@
    
    <insert id="fileUp" parameterType="list">
    	  <foreach collection="list" item="item" index="index" separator=";">
-        INSERT INTO shin (sggcd, bjdcd, usage)  
-        VALUES (#{item.sggcd}, #{item.bjdcd}, #{item.usage})
+        INSERT INTO shin (sgg_cd, bjd_cd, usage)
+        VALUES (#{item.sgg_cd}, #{item.bjaovjdpd_cd}, #{item.usage})
       </foreach>
    </insert>
-	
+   
+   <update id="updateMVDatabase">
+   		<![CDATA[
+   		REFRESH MATERIALIZED VIEW CONCURRENTLY shinjinview
+   		]]>
+   </update>
+   		
+   <delete id="clearData">
+        DELETE FROM shin;
+   </delete>
+   
+   <select id="chartList" parameterType="String" resultType="Map">
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+		FROM shinjinview23
+   </select>
+   
+   <select id="allselec" resultType="Map">
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+		FROM shinjinview23
+   </select>
+
 </mapper>

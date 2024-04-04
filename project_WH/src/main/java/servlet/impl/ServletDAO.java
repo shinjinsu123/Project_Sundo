@@ -33,10 +33,26 @@ public class ServletDAO extends EgovComAbstractDAO {
 		return selectList("servlet.bjdList", sgg);
 	}
 
-	public void uploadFile(List<Map<String, Object>> list) {
+	public int uploadFile(List<Map<String, Object>> list) {
 		System.out.println("------------------------");
 		System.out.println(list);
-		session.insert("servlet.fileUp", list);
+		return session.insert("servlet.fileUp", list);
+	}
+
+	public void clearData() {
+		session.delete("servlet.clearData");
+	}
+	
+	public void updateMVDatabase() {
+		session.update("servlet.updateMVDatabase");
+	}
+
+	public List<Map<String, Object>> chartList() {
+		return session.selectList("servlet.chartList");
+	}
+
+	public List<Map<String, Object>> allselec() {
+		return session.selectList("servlet.allselec");
 	}
 	
 	/* 참고용

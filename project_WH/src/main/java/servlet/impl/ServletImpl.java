@@ -41,8 +41,32 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	}
 
 	@Override
-	public void uploadFile(List<Map<String, Object>> list) {
-			dao.uploadFile(list);
+	public int uploadFile(List<Map<String, Object>> list) {
+			return dao.uploadFile(list);
 	}
+
+	@Override
+	public void clearDatabase() {
+		    dao.clearData();
+		
+	}
+	
+	@Override
+	public void updateMVDatabase() {
+			dao.updateMVDatabase();
+	}
+	
+	//통계
+	@Override
+	public List<Map<String, Object>> chartList() {
+		return dao.chartList();
+	}
+	
+	// 통계 전체선택 allselec
+	@Override
+	public List<Map<String, Object>> allselec() {
+		return dao.allselec();
+	}
+	
 
 }

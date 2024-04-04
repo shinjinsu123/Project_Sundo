@@ -1,31 +1,21 @@
 package servlet.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import servlet.service.ServletService;
 import servlet.util.Util;
 import servlet.vo.ServletVO;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class ServletController {
@@ -55,6 +45,7 @@ public class ServletController {
 		return "main/main";
 	}
 	
+	
 	@RequestMapping(value = "/sidoSelect.do", method = RequestMethod.POST)
 	@ResponseBody
 	public List<Map<String, Object>> selectSi(@RequestParam("sido") String sido, Model model) {
@@ -72,11 +63,73 @@ public class ServletController {
 	@ResponseBody
 	public List<Map<String, Object>> selectSgg(@RequestParam("sgg") String sgg, Model model) {
 	    
-		System.out.println("<<<<<<<<<<<<<<<<" + sgg);
-		
 	    List<Map<String, Object>> listst = servletService.bjdList(sgg);
 	    System.out.println(listst);
 	    return listst;
 	}
+	
+	@RequestMapping(value = "/upLoad.do", method = RequestMethod.GET)
+	public String upload() {
+	    
+	    return "main/upload";
+	}
+	
+	@RequestMapping(value = "/layorMap.do", method = RequestMethod.GET)
+	public String map(@RequestParam(name="loc", required = false, defaultValue = "") String loc, Model model) {
+		
+		List<ServletVO> list = servletService.sidoList();
+		model.addAttribute("list", list);
+		return "main/map";
+	}
+	
+	
+	//////////////////////////////////////////////////////////////
+	///////////////////    차트 관련 컨트롤러    ////////////////
+	////////////////////////////////////////////////////////////
+	
+	@RequestMapping(value = "/chart.do", method = RequestMethod.GET)
+	public String chart1(Model model) {
+		
+		List<Map<String, Object>> chartList = servletService.chartList();
+		model.addAttribute("chartList", chartList);
+		System.out.println(chartList);
+		return "main/chart";
+	}
+	
+	// 전체 선택 (allSelected)
+	@RequestMapping(value = "/allSelec.do", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String, Object>> allSelected() {
+		System.out.println("@@@@@@@@@@@@@@@@@@@@");
+		List<Map<String, Object>> allselec = servletService.allselec();
+		//model.addAttribute("allselec", allselec);
+		System.out.println(allselec);
+		return allselec;
+	}
+	
+	/*
+	// 전체 선택 (allSelected)
+	@RequestMapping(value = "/drawChart.do", method = RequestMethod.POST)
+	public String drawChart(Model model) {
+		
+		List<Map<String, Object>> drawChart = servletService.drawChart();
+		model.addAttribute("drawChart", drawChart);
+		System.out.println(drawChart);
+		return "main/chart";
+	}
+	
+	// 전체 선택 (allSelected)
+	@RequestMapping(value = "/drawTable.do", method = RequestMethod.POST)
+	public String drawTable(Model model) {
+		
+		List<Map<String, Object>> drawTable = servletService.drawTable();
+		model.addAttribute("drawTable", drawTable);
+		System.out.println(drawTable);
+		return "main/chart";
+	}
+	*/
+	
+	
+	
 	
 }

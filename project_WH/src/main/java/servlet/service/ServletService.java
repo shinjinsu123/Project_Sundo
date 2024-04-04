@@ -14,6 +14,15 @@ public interface ServletService {
 
 	List<Map<String, Object>> bjdList(String sgg);
 
-	void uploadFile(List<Map<String, Object>> list);
+	int uploadFile(List<Map<String, Object>> list);
+
+	void clearDatabase();
+
+	void updateMVDatabase();
+	
+	// 통계
+	List<Map<String, Object>> chartList();
+
+	List<Map<String, Object>> allselec();
 
 }
