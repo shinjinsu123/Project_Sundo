@@ -67,6 +67,17 @@ public class ServletImpl extends EgovAbstractServiceImpl implements ServletServi
 	public List<Map<String, Object>> allselec() {
 		return dao.allselec();
 	}
-	
+
+	// 통계 시 선택 siselec
+	@Override
+	public List<Map<String, Object>> siSelecChart(String sdCd1) {
+		return dao.siSelecChart(sdCd1);
+	}
+
+	@Override
+	public List<Map<String, Object>> siSelecTable(String sdCd1) {
+		// TODO Auto-generated method stub
+		return dao.siSelecTable(sdCd1);
+	}
 
 }

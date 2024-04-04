@@ -107,29 +107,29 @@ public class ServletController {
 		return allselec;
 	}
 	
-	/*
-	// 전체 선택 (allSelected)
-	@RequestMapping(value = "/drawChart.do", method = RequestMethod.POST)
-	public String drawChart(Model model) {
+	
+	// 시 선택 (siSelec)
+	@RequestMapping(value = "/siSelecChart.do", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String, Object>> drawChart(@RequestParam("sdCd1") String sdCd1, Model model) {
 		
-		List<Map<String, Object>> drawChart = servletService.drawChart();
-		model.addAttribute("drawChart", drawChart);
-		System.out.println(drawChart);
-		return "main/chart";
+		List<Map<String, Object>> siSelecChart = servletService.siSelecChart(sdCd1);
+		model.addAttribute("siSelecChart", siSelecChart);
+		System.out.println(siSelecChart);
+		return siSelecChart;
 	}
 	
-	// 전체 선택 (allSelected)
-	@RequestMapping(value = "/drawTable.do", method = RequestMethod.POST)
-	public String drawTable(Model model) {
+	
+	// 시 선택 (siSelec)
+	@RequestMapping(value = "/siSelecTable.do", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String, Object>> drawTable(@RequestParam("sdCd1") String sdCd1, Model model) {
 		
-		List<Map<String, Object>> drawTable = servletService.drawTable();
-		model.addAttribute("drawTable", drawTable);
-		System.out.println(drawTable);
-		return "main/chart";
+		List<Map<String, Object>> siSelecTable = servletService.siSelecTable(sdCd1);
+		model.addAttribute("siSelecTable", siSelecTable);
+		System.out.println(siSelecTable);
+		return siSelecTable;
 	}
-	*/
-	
-	
 	
 	
 }

@@ -109,7 +109,7 @@ var map;
                   });
                   //////////////// 차트 적용 탭 end
                });
-               });
+});
 </script>
 
 <style>
@@ -168,7 +168,6 @@ body {
 }
 </style>
 
-
 </head>
 <body>
 <div class="Topheader">
@@ -198,16 +197,14 @@ body {
                         <a id="chart" class="nav-link">통계</a><br>
                      </div>
                   </div>
-
                </div>
                		 <!-- map.jsp / static.jsp / upload.jsp 불러오는 곳 -->
                      <div id="views"   class="col-md-9 p-3 border border-dark border-top-0" style="height: 915.5px;">메뉴를 선택해주세요</div>
-	            </div>
 	         </div>
-         <div id="map" style="height: 100vh; width: 65%; margin-left: auto;"></div>
+	         </div>
+         		<div id="map" style="height: 100vh; width: 65%; margin-left: auto;"></div>
+		</div>
    </div>
-</div>
-
 
 </body>
 </html>

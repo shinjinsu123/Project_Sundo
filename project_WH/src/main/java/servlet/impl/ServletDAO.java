@@ -54,6 +54,14 @@ public class ServletDAO extends EgovComAbstractDAO {
 	public List<Map<String, Object>> allselec() {
 		return session.selectList("servlet.allselec");
 	}
+
+	public List<Map<String, Object>> siSelecChart(String sdCd1) {
+		return session.selectList("servlet.siSelecChart", sdCd1);
+	}
+
+	public List<Map<String, Object>> siSelecTable(String sdCd1) {
+		return session.selectList("servlet.siSelecTable", sdCd1);
+	}
 	
 	/* 참고용
 	 * public BoardDTO detail(int no) { return sqlSession.selectOne("board.detail",

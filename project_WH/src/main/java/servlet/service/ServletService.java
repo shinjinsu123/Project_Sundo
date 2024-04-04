@@ -25,4 +25,8 @@ public interface ServletService {
 
 	List<Map<String, Object>> allselec();
 
+	List<Map<String, Object>> siSelecChart(String sdCd1);
+
+	List<Map<String, Object>> siSelecTable(String sdCd1);
+
 }

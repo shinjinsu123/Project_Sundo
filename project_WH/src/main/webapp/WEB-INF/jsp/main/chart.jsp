@@ -12,6 +12,9 @@
 <!-- jquery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- bootstrap -->
+<!-- Bootstrap JavaScript 파일 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script type="text/javascript">
     google.charts.load('current', {'packages':['bar']});   // Google Charts 로드
     google.charts.setOnLoadCallback(drawChart);  // 로드 완료 후 drawChart 함수 호출
@@ -20,11 +23,12 @@
             $('#showStatus').click(function(){
                 var sdCd1 = $('#loc').val();
                 var allSelected = $('#loc option:selected').attr('id') === 'all';
-                
+                alert(sdCd1);
+                alert(allSelected);
                 console.log(sdCd1);
                 console.log(allSelected);
                 
-                if(allSelected){
+                if(allSelected){   // 전체 선택 옵션
                     $.ajax({
                         type     : 'POST',
                         url      : 'allSelec.do',
@@ -32,6 +36,32 @@
                         success: function(response){
                             drawChart(response);
                             drawTable(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                }else if(!allSelected){    // 시 선택 옵션
+                	$.ajax({
+                        type     : 'POST',
+                        url      : 'siSelecChart.do',
+                        dataType : 'json',
+                        data: { 'sdCd1': sdCd1 },  //선택된 값 전송
+                        success: function(response){
+                        	alert("시선택 어럴트");
+                            drawChart22(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                	$.ajax({     // 시 선택 옵션
+                        type     : 'POST',
+                        url      : 'siSelecTable.do',
+                        dataType : 'json',
+                        data: { 'sdCd1': sdCd1 },  //선택된 값 전송
+                        success: function(response){
+                        	drawTable22(response);
                         },
                         error: function(xhr, status, error) {
                             console.error(error);
@@ -83,6 +113,49 @@
         var chart = new google.visualization.BarChart(document.getElementById('charts'));
         chart.draw(chartData, options);
     }
+    
+    function drawChart22(response) {
+        if (!response || response.length < 1) {
+            alert('시/도를 선택해 주세요.');
+            return;
+        }
+
+        var data = [['Category','전기 사용량']];
+        response.forEach(function(item) {
+            data.push([item.sd_nm, item.usage]);
+        });
+
+        var chartData = google.visualization.arrayToDataTable(data);
+
+        var options = {
+            chart: {
+                title: '시도 사용량',
+                subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+            },
+            tooltip: {trigger: 'both', isHtml: true },
+            bar: {groupWidth: '50%'},
+            animation: {
+                startup: true,
+                duration: 1000,
+                easing: 'linear'
+            },
+            hAxis: {
+                textStyle: { fontSize: 10 }, 
+            },
+            vAxis: {
+                textStyle: { fontSize: 12, fontWeight: 'bold'}
+            },
+            chartArea: { 
+                width: '75%',
+                height: '93%'
+            },
+            bars: 'horizontal',
+            focusTarget: 'category'
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById('charts'));
+        chart.draw(chartData, options);
+    }
 
     function drawTable(response) {
         var tableHtml = '<table class="table"><thead style="position: sticky; top: 0; background-color: white; z-index: 1;"><tr><th>지역 이름</th><th>전기 사용량(kWh)</th></tr></thead><tbody>';
@@ -93,10 +166,27 @@
 
         tableHtml += '</tbody></table>';
         $('#table').html(tableHtml).css({
-            'max-height': '350px',
+            'max-height': '450px',
             'overflow-y': 'auto',
             'background-color': 'white'
         });
+        
+    }
+    
+    function drawTable22(response) {
+        var tableHtml = '<table class="table"><thead style="position: sticky; top: 0; background-color: white; z-index: 1;"><tr><th>지역 이름</th><th>전기 사용량(kWh)</th></tr></thead><tbody>';
+        
+        response.forEach(function(item) {
+            tableHtml += '<tr><td>' + item.sd_nm + '</td><td>' + item.usage + '</td></tr>';
+        });
+
+        tableHtml += '</tbody></table>';
+        $('#table').html(tableHtml).css({
+            'max-height': '450px',
+            'overflow-y': 'auto',
+            'background-color': 'white'
+        });
+        
     }
 </script>
 <style>
@@ -120,11 +210,29 @@
             </c:forEach>
         </select>
    </div><br>
-   <button class="btn btn-secondary" id="showStatus">통계 보기</button>
-   <div>
-        <div id="charts"></div>
-        <div id="table"></div>
+   <button type="button" class="btn btn-secondary" id="showStatus" data-bs-toggle="modal" data-bs-target="#myModal">통계 보기</button>
+	   
+   <!-- 위 버튼 누르면 작동하는 모달 -->
+   <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-xl">
+       <div class="modal-content" style="width: 1300px; height: 1050px;">
+         <div class="modal-header">
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+           <div>
+		       <div id="charts" style="width: 1200px; height: 400px;"></div>
+		       <div id="table" style="max-height: 1200px; overflow-y: auto;"></div>
+  			</div>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-danger" data-bs-dismiss="modal">닫기</button>
+         </div>
+       </div>
+     </div>
    </div>
+	   
+	   
 </div>
 </body>
 </html>
