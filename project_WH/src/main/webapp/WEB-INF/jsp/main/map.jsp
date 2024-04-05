@@ -135,6 +135,79 @@ $(document).ready(function(){  //
 				// 범례 이미지를 범례 컨테이너에 추가합니다.
 				legendContainer.appendChild(legendImg);
 		   	    //---------------------------------------------------------------
+		   	    
+				/////////////////////////////////////////////////////////////////////////////
+				/////////////////////             팝 업 창            //////////////////////
+				///////////////////////////////////////////////////////////////////////////
+				
+				//팝업 오버레이 생성
+				var overlay = new ol.Overlay({
+				element: document.getElementById('popup'), // 팝업의 HTML 요소
+				positioning: 'bottom-center', // 팝업을 마커 아래 중앙에 위치시킴
+				offset: [0, -20], // 팝업을 마커 아래로 조정
+				autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
+				});
+				map.addOverlay(overlay);
+				
+				//팝업 닫기 버튼 요소 가져오기
+				var popupCloser = document.getElementById('popup-closer');
+				
+				// 팝업 닫기 버튼에 이벤트 리스너 추가
+				popupCloser.onclick = function() {
+				  overlay.setPosition(undefined); // 팝업을 지도에서 제거
+				  return false; // 이벤트 전파 방지
+				};
+				
+				//클릭 이벤트 리스너 설정
+				map.on('singleclick', function(evt) {
+				// 클릭한 지점의 좌표를 가져옴
+				alert("팝업 클릭했다.");
+				var coordinate = evt.coordinate;
+				alert(coordinate);
+				
+				  // 해당 좌표에서의 지리적 정보를 가져오는 요청을 서버에 보냄
+				  var featureRequest = new ol.format.WFS().writeGetFeature({
+					    srsName: 'EPSG:3857',
+					    featureNS: 'http://localhost/geoserver/cite',
+					    featurePrefix: 'cite',
+					    featureTypes: ['sggmv'],
+					    outputFormat: 'application/json',
+					    geometryName: 'geom',
+					    filter: new ol.format.filter.Intersects('geom', new ol.geom.Point(coordinate))
+					});
+				
+				// 서버에 요청 보내기
+				fetch('http://localhost/geoserver/cite/wms', {
+				method: 'POST',
+				body: new XMLSerializer().serializeToString(featureRequest)
+				})
+				.then(function(response) {
+				return response.json();
+				})
+				.then(function(json) {
+				// 가져온 정보에서 단계 구분 값을 추출하여 팝업에 표시
+				if (json.features.length > 0) {
+				  var properties = json.features[0].properties;
+				  var sgg_pu = properties['usage']; // 예시: 구분 값의 키가 'sgg_cd'라 가정
+				  var sgg_cd = properties['adm_sect_c']; 
+				  var sgg_nm = properties['sgg_nm'];
+				  
+				  // 팝업 내용을 구성
+				  var popupContent;
+				    popupContent = 
+				       '<p>' + sgg_nm + '</p>'
+				       + '<p>전력 사용량 : ' + sgg_pu.toLocaleString() + ' kWh' + '</p>';
+				       
+				     // 팝업 내용 설정
+				     document.getElementById('popup-content').innerHTML = popupContent;
+				     
+				     // 팝업 위치 설정 및 보이기
+				     overlay.setPosition(coordinate);                   
+				} else {
+				  alert('클릭한 지점에 대한 정보를 찾을 수 없습니다.');
+				}
+				});
+			});
 	    }
 
     function addSggLayer() {
@@ -199,7 +272,81 @@ $(document).ready(function(){  //
         
         // 범례 이미지를 범례 컨테이너에 추가합니다.
         legendContainer.appendChild(legendImg);
-    }
+        
+		/////////////////////////////////////////////////////////////////////////////
+		/////////////////////             팝 업 창            //////////////////////
+		///////////////////////////////////////////////////////////////////////////
+		
+		//팝업 오버레이 생성
+		var overlay = new ol.Overlay({
+		element: document.getElementById('popup'), // 팝업의 HTML 요소
+		positioning: 'bottom-center', // 팝업을 마커 아래 중앙에 위치시킴
+		offset: [0, -20], // 팝업을 마커 아래로 조정
+		autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
+		});
+		map.addOverlay(overlay);
+		
+		//팝업 닫기 버튼 요소 가져오기
+		var popupCloser = document.getElementById('popup-closer');
+		
+		// 팝업 닫기 버튼에 이벤트 리스너 추가
+		popupCloser.onclick = function() {
+		  overlay.setPosition(undefined); // 팝업을 지도에서 제거
+		  return false; // 이벤트 전파 방지
+		};
+		
+		//클릭 이벤트 리스너 설정
+		map.on('singleclick', function(evt) {
+		// 클릭한 지점의 좌표를 가져옴
+		alert("팝업 클릭했다.");
+		var coordinate = evt.coordinate;
+		alert(coordinate);
+		
+		  // 해당 좌표에서의 지리적 정보를 가져오는 요청을 서버에 보냄
+		  var featureRequest = new ol.format.WFS().writeGetFeature({
+			    srsName: 'EPSG:3857',
+			    featureNS: 'http://localhost/geoserver/cite',
+			    featurePrefix: 'cite',
+			    featureTypes: ['sggmv'],
+			    outputFormat: 'application/json',
+			    geometryName: 'geom',
+			    filter: new ol.format.filter.Intersects('geom', new ol.geom.Point(coordinate))
+			});
+		
+			// 서버에 요청 보내기
+			fetch('http://localhost/geoserver/cite/wms', {
+			method: 'POST',
+			body: new XMLSerializer().serializeToString(featureRequest)
+			})
+			.then(function(response) {
+			return response.json();
+			})
+			.then(function(json) {
+			// 가져온 정보에서 단계 구분 값을 추출하여 팝업에 표시
+			if (json.features.length > 0) {
+			  var properties = json.features[0].properties;
+			  var sgg_pu = properties['usage']; // 예시: 구분 값의 키가 'sgg_cd'라 가정
+			  var sgg_cd = properties['adm_sect_c']; 
+			  var bjd_nm = properties['bjd_nm'];
+			  alert(bjd_nm);
+			  alert(sgg_pu);
+			  // 팝업 내용을 구성
+			  var popupContent;
+			    popupContent = 
+			       '<p>' + bjd_nm + '</p>'
+			       + '<p>전력 사용량 : ' + sgg_pu.toLocaleString() + ' kWh' + '</p>';
+			       
+			     // 팝업 내용 설정
+			     document.getElementById('popup-content').innerHTML = popupContent;
+			     
+			     // 팝업 위치 설정 및 보이기
+			     overlay.setPosition(coordinate);                   
+			} else {
+			  alert('클릭한 지점에 대한 정보를 찾을 수 없습니다.');
+			}
+		});
+	});
+}
 
     function addBjdLayer() {
     	
@@ -517,8 +664,20 @@ $(document).ready(function(){  //
 	   	    //  map.addLayer(bjdLayer); // 맵 객체에 레이어를 추가함
 	   	    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 	   	    
+	   	    //------------------------------------------------------
+	   	    
+	   	    
+	   	    
+	   	    //------------------------------------------------------
+	   	    
 	   });
 }); //
+
+// 팝업 닫기 버튼에 이벤트 리스너 추가
+popupCloser.onclick = function() {
+  overlay.setPosition(undefined); // 팝업을 지도에서 제거
+  return false; // 이벤트 전파 방지
+};
 
 </script>
 
@@ -541,6 +700,42 @@ $(document).ready(function(){  //
     left: 700px; /* 맵 왼쪽으로부터의 거리를 조절합니다. */
     z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정합니다. */
 }
+
+ /* 폰트 스타일 */
+  body {
+    font-family: 'Arial', sans-serif; /* 여기에 사용할 원하는 폰트 이름을 넣어주세요 */
+  }
+  
+  /* 팝업 스타일 */
+  .popup {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    width: 250px; /* 가로폭 조정 */
+    font-size: 16px;
+    color: #333; /* 폰트 색상 */
+    line-height: 1.5; /* 줄간격 조정 */
+    font-weight: bold; /* 폰트 굵기 */
+  }
+
+  /* 팝업 닫기 버튼 스타일 */
+  .popup-closer {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 20px; /* X 아이콘 크기 */
+    color: #888; /* X 아이콘 색상 */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: bold; /* 폰트 굵기 */
+    line-height: 1; /* 세로 정렬 */
+  }
+
+  .popup-closer:hover {
+    color: #555; /* 호버 시 색상 변경 */
+  }
 </style>
 
 </head>
@@ -572,6 +767,12 @@ $(document).ready(function(){  //
 	   
 	   <div>
 	   		<button id="searchBtn" name="searchBtn" type="button">레이어 띄우기</button>
+	   </div>
+	   
+	   <!-- 팝업을 나타내는 HTML 요소 -->
+	   <div id="popup" class="popup">
+	     <a href="#" id="popup-closer" class="popup-closer">&times;</a>
+	     <div id="popup-content"></div>
 	   </div>
 
 </body>

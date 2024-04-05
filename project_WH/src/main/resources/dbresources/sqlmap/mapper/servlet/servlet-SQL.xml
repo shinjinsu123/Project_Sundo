@@ -57,23 +57,23 @@
    </delete>
    
    <select id="chartList" parameterType="String" resultType="Map">
-   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+   		SELECT DISTINCT sd_nm, bjd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
 		FROM shinjinview23
    </select>
    
    <select id="allselec" resultType="Map">
-   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+   		SELECT DISTINCT sd_nm, bjd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
 		FROM shinjinview23
    </select>
    
    <select id="siSelecChart" resultType="Map" parameterType="String">
-   		SELECT DISTINCT sgg_nm AS sd_nm, sd_cd, usage 
+   		SELECT DISTINCT sgg_nm AS sd_nm, sd_cd, bjd_nm, usage 
 		FROM shinjinview23
 		WHERE sd_cd = #{sdCd1};
    </select>
    
    <select id="siSelecTable" resultType="Map" parameterType="String">
-   		SELECT DISTINCT sgg_nm, sgg_cd, sd_nm, sd_cd, usage 
+   		SELECT DISTINCT sgg_nm, bjd_nm, sgg_cd, sd_nm, sd_cd, usage 
 		FROM shinjinview23
 		WHERE sd_cd = #{sdCd1};
    </select>

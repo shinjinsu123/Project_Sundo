@@ -21,6 +21,7 @@
 
         $(function() {
             $('#showStatus').click(function(){
+            	alert('테러리스트 never die');
                 var sdCd1 = $('#loc').val();
                 var allSelected = $('#loc option:selected').attr('id') === 'all';
                 alert(sdCd1);
@@ -161,7 +162,7 @@
         var tableHtml = '<table class="table"><thead style="position: sticky; top: 0; background-color: white; z-index: 1;"><tr><th>지역 이름</th><th>전기 사용량(kWh)</th></tr></thead><tbody>';
         
         response.forEach(function(item) {
-            tableHtml += '<tr><td>' + item.sd_nm + '</td><td>' + item.sitotalusage + '</td></tr>';
+            tableHtml += '<tr><td>' + item.sd_nm + '</td><td>' + item.sitotalusage.toLocaleString() + '</td></tr>';
         });
 
         tableHtml += '</tbody></table>';
@@ -177,7 +178,7 @@
         var tableHtml = '<table class="table"><thead style="position: sticky; top: 0; background-color: white; z-index: 1;"><tr><th>지역 이름</th><th>전기 사용량(kWh)</th></tr></thead><tbody>';
         
         response.forEach(function(item) {
-            tableHtml += '<tr><td>' + item.sd_nm + '</td><td>' + item.usage + '</td></tr>';
+            tableHtml += '<tr><td>' + item.sgg_nm + '</td><td>' + item.usage.toLocaleString() + '</td></tr>';
         });
 
         tableHtml += '</tbody></table>';

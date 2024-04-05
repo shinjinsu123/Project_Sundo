@@ -203,6 +203,12 @@ body {
 	         </div>
 	         </div>
          		<div id="map" style="height: 100vh; width: 65%; margin-left: auto;"></div>
+         		
+         	   <!-- 팝업을 나타내는 HTML 요소 -->
+			   <!-- <div id="popup" class="popup">
+			     <a href="#" id="popup-closer" class="popup-closer">&times;</a>
+			     <div id="popup-content"></div>
+			   </div> -->
 		</div>
    </div>
 
