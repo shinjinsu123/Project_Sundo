@@ -11,7 +11,6 @@
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <!-- jquery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- bootstrap -->
 <!-- Bootstrap JavaScript 파일 추가 -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
@@ -21,11 +20,10 @@
 
         $(function() {
             $('#showStatus').click(function(){
-            	alert('테러리스트 never die');
                 var sdCd1 = $('#loc').val();
                 var allSelected = $('#loc option:selected').attr('id') === 'all';
-                alert(sdCd1);
-                alert(allSelected);
+                //alert(sdCd1);
+                //alert(allSelected);
                 console.log(sdCd1);
                 console.log(allSelected);
                 
@@ -49,7 +47,6 @@
                         dataType : 'json',
                         data: { 'sdCd1': sdCd1 },  //선택된 값 전송
                         success: function(response){
-                        	alert("시선택 어럴트");
                             drawChart22(response);
                         },
                         error: function(xhr, status, error) {
@@ -72,9 +69,9 @@
             });
         });
 
-    function drawChart(response) {
+    function drawChart(response) {   // 전체 선택시 차트 만드는 함수 
         if (!response || response.length < 1) {
-            alert('시/도를 선택해 주세요.');
+            //alert('시/도를 선택해 주세요.');
             return;
         }
 
@@ -115,7 +112,7 @@
         chart.draw(chartData, options);
     }
     
-    function drawChart22(response) {
+    function drawChart22(response) {   // 특정 시 선택시 차트 만드는 함수
         if (!response || response.length < 1) {
             alert('시/도를 선택해 주세요.');
             return;
@@ -133,6 +130,7 @@
                 title: '시도 사용량',
                 subtitle: 'Sales, Expenses, and Profit: 2014-2017',
             },
+            /*
             tooltip: {trigger: 'both', isHtml: true },
             bar: {groupWidth: '50%'},
             animation: {
@@ -148,12 +146,47 @@
             },
             chartArea: { 
                 width: '75%',
-                height: '93%'
+                height: '143%'
+            },
+            bars: 'horizontal',
+            focusTarget: 'category'
+        };
+        */
+            tooltip: { trigger: 'both', isHtml: true },
+            bar: { groupWidth: '50%' },
+            animation: {
+                startup: true,
+                duration: 1000,
+                easing: 'linear'
+            },
+            hAxis: {
+                textStyle: { fontSize: 10 },
+            },
+            vAxis: {
+                textStyle: { fontSize: 12, fontWeight: 'bold' }
             },
             bars: 'horizontal',
             focusTarget: 'category'
         };
 
+        // 데이터 개수에 따라 차트 영역 크기 설정
+        if (response.length > 10 && response.length <= 16) {
+            options.chartArea = { width: '75%', height: '143%' };
+            options.hAxis.textStyle.fontSize = 8; // hAxis의 폰트 크기 조정
+            options.vAxis.textStyle.fontSize = 10; // vAxis의 폰트 크기 조정
+        } else if (response.length > 17){
+            options.chartArea = { width: '75%', height: '223%' };
+            options.hAxis.textStyle.fontSize = 6; // hAxis의 폰트 크기 조정
+            options.vAxis.textStyle.fontSize = 8; // vAxis의 폰트 크기 조정
+        }
+        
+        var tableDiv = document.getElementById('table');
+        if (response.length > 10) {
+            tableDiv.style.maxHeight = '1600px';
+        } else if (response.length > 17) {
+            tableDiv.style.maxHeight = '2400px';
+        }
+		
         var chart = new google.visualization.BarChart(document.getElementById('charts'));
         chart.draw(chartData, options);
     }
@@ -187,16 +220,15 @@
             'overflow-y': 'auto',
             'background-color': 'white'
         });
-        
     }
 </script>
 <style>
 #table thead th {
-    border: 1px solid black; /* 제목에 테두리 추가 */
+    border: 1px solid black;
 }
 
 #table tbody td {
-    border: 1px solid black; /* 내용에 테두리 추가 */
+    border: 1px solid black;
 }
 </style>
 </head>

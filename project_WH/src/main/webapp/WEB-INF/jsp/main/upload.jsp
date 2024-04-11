@@ -10,7 +10,7 @@
 <title>파일 업로드</title>
 
 <!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@latest"></script>
 
 <!-- jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -19,26 +19,34 @@
 
 <script type="text/javascript" charset="UTF-8">
 $(document).ready(function(){  //
-	
+   
 /////////////////////////////////// 파일 업로드 start
     $("#fileBtn").on("click", function() {
        let fileName = $('#file').val();
-       alert("!111 " + fileName);
+       //alert("!111 " + fileName);
        if(fileName == ""){
           alert("파일을 선택해주세요.");
           return false;
        }
        let dotName = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
        if(dotName == 'txt'){
-          alert("! " + fileName);
-			
+          //alert("! " + fileName);
           swal.fire({
             title: "파일 업로드 중...",
             text: "잠시만 기다려주세요.",
-            closeOnClickOutside: false,
-            closeOnEsc: false,
-            buttons: false
-        	});
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false
+            
+            //closeOnClickOutside: false,
+            //closeOnEsc: false,
+            //buttons: false
+            
+           });
+          
+       	  // 파일 업로드 폼에서 파일 가져오기
+          let formData = new FormData();
+          formData.append('file', $('#file')[0].files[0]); // FormData에 파일 추가
           
           $.ajax({
              url : '/fileUp2.do',
@@ -58,7 +66,10 @@ $(document).ready(function(){  //
                      // 파일 업로드 진행 상황을 SweetAlert로 업데이트
                       swal.update({
                             title: "파일 업로드 중...",
-                            text: "진행 중: " + perc + "%"
+                            text: "진행 중: " + perc + "%",
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false
                         });
                      
                      // 업로드가 완료되면 SweetAlert 닫기
@@ -70,12 +81,20 @@ $(document).ready(function(){  //
           },
           success : function(result) {
               // 파일 업로드 성공 시 SweetAlert로 성공 메시지 보여줌
-              swal("성공!", "파일이 성공적으로 업로드되었습니다.", "success");
+              swal.fire({
+				  title: "성공!",
+				  text: "파일이 성공적으로 업로드되었습니다.",
+				  icon: "success"
+				});
               console.log("SUCCESS : ", result);
           },
           error : function(Data) {
               // 파일 업로드 실패 시 SweetAlert로 에러 메시지 보여줌
-              swal("에러!", "파일 업로드 중 에러가 발생했습니다.", "error");
+              swal.fire({
+				  title: "에러!",
+				  text: "파일 업로드 중 에러가 발생했습니다.",
+				  icon: "error"
+				});
               console.log("ERROR : ", Data);
           } 
        });
@@ -88,11 +107,11 @@ $(document).ready(function(){  //
 }); 
 </script>
 <body>
-    	<div>
-          	<form id="form" enctype="multipart/form-data">
-				<input type="file" id="file" name="file" accept="txt">
-			</form>
-				<button type="button" id="fileBtn">파일 전송</button><hr>
+       <div>
+             <form id="form" enctype="multipart/form-data">
+            <input type="file" id="file" name="file" accept="txt">
+         </form>
+            <button type="button" id="fileBtn">파일 전송</button><hr>
         </div>
 
 </body>

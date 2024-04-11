@@ -17,11 +17,6 @@
 		SELECT sd_nm, sd_cd, ST_AsText(ST_Transform(ST_Centroid(geom), 4326)) AS geom 
         FROM tl_sd
 	</select>
-	
-   <!-- <select id="guList" parameterType="String" resultType="Map">
-	   SELECT REPLACE(sgg_nm, CONCAT(sd_nm, ' '), '') AS sgg_nm
-		FROM tl_sgg WHERE sgg_nm LIKE CONCAT(#{sido}, '%')
-   </select> -->
    
    <select id="guList" parameterType="String" resultType="Map">
       SELECT REPLACE(g.sgg_nm, CONCAT(s.sd_nm, ' '), '') AS sgg_nm, 
@@ -41,39 +36,39 @@
    
    <insert id="fileUp" parameterType="list">
    	  <foreach collection="list" item="item" index="index" separator=";">
-        INSERT INTO shin (sgg_cd, bjd_cd, usage)
+        INSERT INTO "TB_CARBON_B2" (sgg_cd, bjd_cd, usage)
         VALUES (#{item.sgg_cd}, #{item.bjaovjdpd_cd}, #{item.usage})
       </foreach>
    </insert>
    
    <update id="updateMVDatabase">
    		<![CDATA[
-   		REFRESH MATERIALIZED VIEW CONCURRENTLY shinjinview
+   		REFRESH MATERIALIZED VIEW shinjinview
    		]]>
    </update>
    		
    <delete id="clearData">
-        DELETE FROM shin;
+        DELETE FROM "TB_CARBON_B2";
    </delete>
    
    <select id="chartList" parameterType="String" resultType="Map">
-   		SELECT DISTINCT sd_nm, bjd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
 		FROM shinjinview23
    </select>
    
    <select id="allselec" resultType="Map">
-   		SELECT DISTINCT sd_nm, bjd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
+   		SELECT DISTINCT sd_nm, sd_cd, SUM(usage) OVER (PARTITION BY sd_nm) AS sitotalusage 
 		FROM shinjinview23
    </select>
    
    <select id="siSelecChart" resultType="Map" parameterType="String">
-   		SELECT DISTINCT sgg_nm AS sd_nm, sd_cd, bjd_nm, usage 
+   		SELECT DISTINCT sgg_nm AS sd_nm, sd_cd, usage 
 		FROM shinjinview23
 		WHERE sd_cd = #{sdCd1};
    </select>
    
    <select id="siSelecTable" resultType="Map" parameterType="String">
-   		SELECT DISTINCT sgg_nm, bjd_nm, sgg_cd, sd_nm, sd_cd, usage 
+   		SELECT DISTINCT sgg_nm, sgg_cd, sd_nm, sd_cd, usage 
 		FROM shinjinview23
 		WHERE sd_cd = #{sdCd1};
    </select>

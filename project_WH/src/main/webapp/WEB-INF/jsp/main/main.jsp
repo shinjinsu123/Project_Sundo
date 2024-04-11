@@ -21,10 +21,10 @@
 <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v6.15.1/build/ol.js"></script>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" charset="UTF-8">
-var map;
-   $(document).ready(function(){ //
+var map;  // map 전역변수로 사용
 
-                  ////////////////////////////////////// vworld 맵생성하는 부분 start
+   $(document).ready(function(){
+                  ////////////////////////////////////// vworld 맵 생성 api
                   map = new ol.Map(
                         { // OpenLayer의 맵 객체를 생성한다.
                            target : 'map', // 맵 객체를 연결하기 위한 target으로 <div>의 id값을 지정해준다.
@@ -33,21 +33,20 @@ var map;
                                  {
                                     source : new ol.source.OSM(
                                           {
-                                             url : 'http://api.vworld.kr/req/wmts/1.0.0/5FC26C17-DD7E-3483-AD1C-D77561A51358/Base/{z}/{y}/{x}.png'
                                           // vworld의 지도를 가져온다.
+                                             url : 'http://api.vworld.kr/req/wmts/1.0.0/5FC26C17-DD7E-3483-AD1C-D77561A51358/Base/{z}/{y}/{x}.png'
                                           })
                                  }) ],
-                           view : new ol.View({ // 지도가 보여 줄 중심좌표, 축소, 확대 등을 설정한다. 보통은 줌, 중심좌표를 설정하는 경우가 많다.
+                           view : new ol.View({ 
                               center : ol.proj.fromLonLat([ 128.4,
                                     35.7 ]),
                               zoom : 8
                            })
                         });
-                  ////////////////////////////////// vworld 맵생성하는 부분 end
 				  
-                  //////////////// "탄소지도" 레이어 적용 탭 start
+                  //////////////// "탄소지도" 레이어 적용 탭
                   $("#layorMap").click(function(e) {
-                     e.preventDefault(); // 기본 동작 방지(화면 이동 방지)
+                	  e.preventDefault(); // 기본 동작 방지(화면 이동 방지)
 
                      $.ajax({
                          type : 'get',
@@ -69,9 +68,8 @@ var map;
                          }
                      });
                   });
-                  //////////////// 레이어 적용 탭 end
                   
-                  //////////////// "데이터 삽입" 파일업로드 탭 start
+                  //////////////// "데이터 삽입" 파일업로드 탭
                   $("#upLoad").click(function(e) {
                      e.preventDefault(); // 기본 동작 방지(화면 이동 방지)
 
@@ -87,12 +85,10 @@ var map;
                         }
                      });
                   });
-                  ////////////////파일업로드 탭 end
                   
-                  //////////////// "통계" 차트 적용 탭 start
+                  //////////////// "통계" 차트 적용 탭
                   $("#chart").click(function(e) {
                      e.preventDefault(); // 기본 동작 방지(화면 이동 방지)
-					 alert("통계로 넘어간다");
 					 google.charts.load('current', {'packages':['corechart']});
 					 google.charts.setOnLoadCallback(function() {
                      $.ajax({
@@ -107,7 +103,6 @@ var map;
                         }
                      });
                   });
-                  //////////////// 차트 적용 탭 end
                });
 });
 </script>
@@ -144,13 +139,13 @@ body {
 /* 메뉴 스타일 */
 .nav-link {
     color: #000;
-    padding: 10px 0;
-    text-align: center;
-    border-bottom: 1px solid #dee2e6;
+    padding: 0;
+    text-align: left;
+    border-bottom: 1px solid red;
     transition: all 0.3s ease;
 }
 
-.nav-link:hover {
+.nav-item:hover {
     background-color: #e9ecef;
     color: #007bff;
 }
@@ -160,7 +155,6 @@ body {
     color: #fff;
 }
 
-/* 맵 스타일 */
 #map {
     flex: 1;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -184,14 +178,17 @@ body {
             <div class="row">
                <div class="col-md-3 border border-dark border-end-0 border-top-0">
                   <div class="nav">
+                  
                      <!-- 탄소지도 -->
                      <div class="nav-item justify-content-center">
                         <a id="layorMap" class="nav-link">탄소지도</a><br>
                      </div>
+                     
                      <!-- 데이터 삽입 -->
                      <div class="nav-item justify-content-center">
                         <a id="upLoad" class="nav-link">데이터 삽입</a><br>
                      </div>
+                     
                      <!-- 통계 -->
                      <div class="nav-item justify-content-center">
                         <a id="chart" class="nav-link">통계</a><br>
@@ -199,16 +196,12 @@ body {
                   </div>
                </div>
                		 <!-- map.jsp / static.jsp / upload.jsp 불러오는 곳 -->
-                     <div id="views"   class="col-md-9 p-3 border border-dark border-top-0" style="height: 915.5px;">메뉴를 선택해주세요</div>
+                     <div id="views"   class="col-md-9 p-3 border border-dark border-top-0" style="height: 910px;">탄소지도 / 데이터삽입 / 통계<br>
+                     중 하나를 눌러주시기 바랍니다.
+                     </div>
 	         </div>
 	         </div>
          		<div id="map" style="height: 100vh; width: 65%; margin-left: auto;"></div>
-         		
-         	   <!-- 팝업을 나타내는 HTML 요소 -->
-			   <!-- <div id="popup" class="popup">
-			     <a href="#" id="popup-closer" class="popup-closer">&times;</a>
-			     <div id="popup-content"></div>
-			   </div> -->
 		</div>
    </div>
 

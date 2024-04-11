@@ -68,7 +68,9 @@ public class FileUpController {
 	       
 	       servletService.updateMVDatabase(); // 구체화된 뷰 업데이트
 	       
+	       
 	       /*
+	       // 처음에 사용했던 while문 : out of memory
 	       while((line = br.readLine()) != null) {
 	          Map<String, Object> m = new HashMap<String, Object>();
 	          String[] lineArr = line.split("\\|");
@@ -98,8 +100,8 @@ public class FileUpController {
 	             System.out.println(list.size());
 	          }
 	       }
-	       servletService.uploadFile(list);
-	        */
+	       servletService.updateMVDatabase(); // 구체화된 뷰 업데이트
+	       */
 	       br.close();
 	       isr.close();
 	    }

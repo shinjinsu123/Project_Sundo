@@ -84,7 +84,7 @@ public class ServletController {
 	
 	
 	//////////////////////////////////////////////////////////////
-	///////////////////    차트 관련 컨트롤러    ////////////////
+	///////////////////    통계 관련 컨트롤러    ////////////////
 	////////////////////////////////////////////////////////////
 	
 	@RequestMapping(value = "/chart.do", method = RequestMethod.GET)
@@ -107,7 +107,6 @@ public class ServletController {
 		return allselec;
 	}
 	
-	
 	// 시 선택 (siSelec)
 	@RequestMapping(value = "/siSelecChart.do", method = RequestMethod.POST)
 	@ResponseBody
@@ -120,7 +119,7 @@ public class ServletController {
 	}
 	
 	
-	// 시 선택 (siSelec)
+	// 시 선택 (siSelec) _ table
 	@RequestMapping(value = "/siSelecTable.do", method = RequestMethod.POST)
 	@ResponseBody
 	public List<Map<String, Object>> drawTable(@RequestParam("sdCd1") String sdCd1, Model model) {

@@ -14,6 +14,11 @@
 
 <script type="text/javascript" charset="UTF-8">
 $(document).ready(function(){  //
+	
+	/////////////////////////////////////////////////////////////////////////////
+	///////////////////             전역변수 설정           ////////////////////
+	///////////////////////////////////////////////////////////////////////////
+	
 	var sdLayer;
 	var sggLayer;
 	var bjdLayer;
@@ -47,7 +52,9 @@ $(document).ready(function(){  //
         if (sidocd) {
             if(!sggcd && !bjdcd){
             	map.removeLayer(sggmvLayer); // 시를 계속 바꿀때 기존거 삭제하기
-                addSggMVLayer();
+            	//map.removeLayer(sdLayer); // 시를 계속 바꿀때 기존거 삭제하기
+                //addSggMVLayer();
+            	addSidoLayer();
             }else if(sggcd && !bjdcd) {
             	map.removeLayer(sggLayer);
             	map.removeLayer(bjdLayer);
@@ -55,7 +62,6 @@ $(document).ready(function(){  //
             	addSidoLayer();
                 addSggLayer();
                 addBjdMVLayer();
-           		
             }else if(sggcd && bjdcd) {
            		map.removeLayer(sggLayer);
        		    map.removeLayer(sggmvLayer);
@@ -64,13 +70,23 @@ $(document).ready(function(){  //
             }
          }
     });
+	
+	/////////////////////////////////////////////////////////////////////////////
+    ///////////////////             리셋 버튼 시             ///////////////////
+    ///////////////////////////////////////////////////////////////////////////
+	
+    $("#resetBtn").click(function() {
+    	location.reload();
+    	
+    });
+	
+	
     
     /////////////////////////////////////////////////////////////////////////////
     ///////////////             레 이 어 함 수 호 출             ///////////////
     ///////////////////////////////////////////////////////////////////////////
     
     function addSidoLayer() {
-       alert("addSidoLayer 함수 호출됨!");
        
 	   	// 레이어 추가하기
 	      sdLayer = new ol.layer.Tile({
@@ -91,7 +107,6 @@ $(document).ready(function(){  //
     }
     function addSggMVLayer() {
     	
-	       //alert("addSggLayer 함수 호출됨!");
 	  	   // 레이어 추가하기
 		   //alert(cqlFilterSGGMV);
 		   	sggmvLayer = new ol.layer.Tile({
@@ -109,16 +124,19 @@ $(document).ready(function(){  //
 		   	         })
 		   	     });
 		   	     map.addLayer(sggmvLayer); // 맵 객체에 레이어를 추가함
-		   	   
-		   	    //---------------------------------------------------------------
-		   	    // 범례 이미지를 감싸는 새로운 <div> 요소를 만듭니다.
+		   	     
+				/////////////////////////////////////////////////////////////////////////////
+		   	    /////////////////             범례 테이블 적용             /////////////////
+		   	    ///////////////////////////////////////////////////////////////////////////
+		   	    
+		   	    // 범례 이미지 <div> 생성
 				legendContainer = document.createElement('div');
-				legendContainer.className = 'legend-container'; // CSS 클래스 추가
+				legendContainer.className = 'legend-container';
 				
-				// 맵 요소의 상대적인 위치에 범례 컨테이너를 추가합니다.
+				// 맵에 범례 테이블을 추가.
 				map.getTargetElement().appendChild(legendContainer);
 				
-				// 범례 이미지 요청을 위한 URL 생성
+				// 범례 테이블에 들어갈 정보 받아올 URL (정보)
 				legendUrl = 'http://localhost/geoserver/cite/wms?' +
 				    'service=WMS' +
 				    '&VERSION=1.0.0' +
@@ -128,44 +146,42 @@ $(document).ready(function(){  //
 				    '&WIDTH=80' +
 				    '&HEIGHT=20';
 				
-				// 범례 이미지를 추가할 HTML <img> 엘리먼트를 생성합니다.
+				// 범례 이미지를 추가할 HTML 생성.
 				legendImg = document.createElement('img');
 				legendImg.src = legendUrl;
 				
-				// 범례 이미지를 범례 컨테이너에 추가합니다.
+				// 범례 이미지를 범례 컨테이너에 추가.
 				legendContainer.appendChild(legendImg);
-		   	    //---------------------------------------------------------------
-		   	    
+				
 				/////////////////////////////////////////////////////////////////////////////
 				/////////////////////             팝 업 창            //////////////////////
 				///////////////////////////////////////////////////////////////////////////
 				
 				//팝업 오버레이 생성
-				var overlay = new ol.Overlay({
+				var overlaysgg = new ol.Overlay({
 				element: document.getElementById('popup'), // 팝업의 HTML 요소
-				positioning: 'bottom-center', // 팝업을 마커 아래 중앙에 위치시킴
-				offset: [0, -20], // 팝업을 마커 아래로 조정
-				autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
+				positioning: 'bottom-center' // 팝업을 마커 아래 중앙에 위치시킴
+				//offset: [0, -20], // 팝업을 마커 아래로 조정
+				//autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
 				});
-				map.addOverlay(overlay);
+				map.addOverlay(overlaysgg);
 				
 				//팝업 닫기 버튼 요소 가져오기
 				var popupCloser = document.getElementById('popup-closer');
 				
 				// 팝업 닫기 버튼에 이벤트 리스너 추가
 				popupCloser.onclick = function() {
-				  overlay.setPosition(undefined); // 팝업을 지도에서 제거
+					overlaysgg.setPosition(undefined); // 팝업을 지도에서 제거
 				  return false; // 이벤트 전파 방지
 				};
 				
 				//클릭 이벤트 리스너 설정
 				map.on('singleclick', function(evt) {
+
 				// 클릭한 지점의 좌표를 가져옴
-				alert("팝업 클릭했다.");
 				var coordinate = evt.coordinate;
-				alert(coordinate);
 				
-				  // 해당 좌표에서의 지리적 정보를 가져오는 요청을 서버에 보냄
+				  // 해당 좌표에서의 지리적 정보를 가져오는 것을 서버에 요청
 				  var featureRequest = new ol.format.WFS().writeGetFeature({
 					    srsName: 'EPSG:3857',
 					    featureNS: 'http://localhost/geoserver/cite',
@@ -202,7 +218,8 @@ $(document).ready(function(){  //
 				     document.getElementById('popup-content').innerHTML = popupContent;
 				     
 				     // 팝업 위치 설정 및 보이기
-				     overlay.setPosition(coordinate);                   
+				     overlaysgg.setPosition(coordinate);
+				     document.getElementById('popup').style.display = 'block'; // 팝업 창을 보이도록 설정
 				} else {
 				  alert('클릭한 지점에 대한 정보를 찾을 수 없습니다.');
 				}
@@ -226,7 +243,7 @@ $(document).ready(function(){  //
    	            serverType : 'geoserver',
    	         })
    	      });
-   	     map.addLayer(sggLayer); // 맵 객체에 레이어를 추가함
+   	     map.addLayer(sggLayer); // 맵 객체에 레이어를 추가.
     }
     
     function addBjdMVLayer() {
@@ -266,11 +283,11 @@ $(document).ready(function(){  //
             '&WIDTH=80' +
             '&HEIGHT=20';
         
-        // 범례 이미지를 추가할 HTML <img> 엘리먼트를 생성합니다.
+        // 범례 이미지를 추가할 HTML <img> 엘리먼트를 생성.
         legendImg = document.createElement('img');
         legendImg.src = legendUrl;
         
-        // 범례 이미지를 범례 컨테이너에 추가합니다.
+        // 범례 이미지를 범례 컨테이너에 추가.
         legendContainer.appendChild(legendImg);
         
 		/////////////////////////////////////////////////////////////////////////////
@@ -278,36 +295,35 @@ $(document).ready(function(){  //
 		///////////////////////////////////////////////////////////////////////////
 		
 		//팝업 오버레이 생성
-		var overlay = new ol.Overlay({
+		var overlaybjd = new ol.Overlay({
 		element: document.getElementById('popup'), // 팝업의 HTML 요소
-		positioning: 'bottom-center', // 팝업을 마커 아래 중앙에 위치시킴
-		offset: [0, -20], // 팝업을 마커 아래로 조정
-		autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
+		positioning: 'bottom-center' // 팝업을 마커 아래 중앙에 위치시킴
+		//offset: [0, -20], // 팝업을 마커 아래로 조정
+		//autoPan: true // 팝업이 지도 영역을 벗어날 경우 자동으로 팝업 위치를 조정하여 보여줌
 		});
-		map.addOverlay(overlay);
+		map.addOverlay(overlaybjd);
 		
 		//팝업 닫기 버튼 요소 가져오기
 		var popupCloser = document.getElementById('popup-closer');
 		
 		// 팝업 닫기 버튼에 이벤트 리스너 추가
 		popupCloser.onclick = function() {
-		  overlay.setPosition(undefined); // 팝업을 지도에서 제거
+			overlaybjd.setPosition(undefined); // 팝업을 지도에서 제거
 		  return false; // 이벤트 전파 방지
 		};
 		
 		//클릭 이벤트 리스너 설정
 		map.on('singleclick', function(evt) {
 		// 클릭한 지점의 좌표를 가져옴
-		alert("팝업 클릭했다.");
+		//alert("팝업 클릭했다.");
 		var coordinate = evt.coordinate;
-		alert(coordinate);
 		
 		  // 해당 좌표에서의 지리적 정보를 가져오는 요청을 서버에 보냄
 		  var featureRequest = new ol.format.WFS().writeGetFeature({
 			    srsName: 'EPSG:3857',
 			    featureNS: 'http://localhost/geoserver/cite',
 			    featurePrefix: 'cite',
-			    featureTypes: ['sggmv'],
+			    featureTypes: ['shinjinviewbjd'],
 			    outputFormat: 'application/json',
 			    geometryName: 'geom',
 			    filter: new ol.format.filter.Intersects('geom', new ol.geom.Point(coordinate))
@@ -325,22 +341,23 @@ $(document).ready(function(){  //
 			// 가져온 정보에서 단계 구분 값을 추출하여 팝업에 표시
 			if (json.features.length > 0) {
 			  var properties = json.features[0].properties;
-			  var sgg_pu = properties['usage']; // 예시: 구분 값의 키가 'sgg_cd'라 가정
+			  var bjd_pu = properties['totalusage']; // 예시: 구분 값의 키가 'sgg_cd'라 가정
 			  var sgg_cd = properties['adm_sect_c']; 
 			  var bjd_nm = properties['bjd_nm'];
-			  alert(bjd_nm);
-			  alert(sgg_pu);
+			  //alert(bjd_nm);
+			  //alert(bjd_pu);
 			  // 팝업 내용을 구성
-			  var popupContent;
-			    popupContent = 
+			  var popupContentbjd;
+			    popupContentbjd = 
 			       '<p>' + bjd_nm + '</p>'
-			       + '<p>전력 사용량 : ' + sgg_pu.toLocaleString() + ' kWh' + '</p>';
+			       + '<p>전력 사용량 : ' + bjd_pu.toLocaleString() + ' kWh' + '</p>';
 			       
 			     // 팝업 내용 설정
-			     document.getElementById('popup-content').innerHTML = popupContent;
+			     document.getElementById('popup-content').innerHTML = popupContentbjd;
 			     
 			     // 팝업 위치 설정 및 보이기
-			     overlay.setPosition(coordinate);                   
+			     overlaybjd.setPosition(coordinate);
+			     document.getElementById('popup').style.display = 'block'; // 팝업 창을 보이도록 설정
 			} else {
 			  alert('클릭한 지점에 대한 정보를 찾을 수 없습니다.');
 			}
@@ -367,33 +384,6 @@ $(document).ready(function(){  //
         });
         map.addLayer(bjdLayer); // 맵 객체에 레이어를 추가함
     }
-/*
-    function createLegend2() {
-        // 범례 이미지를 감싸는 새로운 <div> 요소를 만듭니다.
-        legendContainer = document.createElement('div');
-        legendContainer.className = 'legend-container'; // CSS 클래스 추가
-        
-        // 맵 요소의 상대적인 위치에 범례 컨테이너를 추가합니다.
-        map.getTargetElement().appendChild(legendContainer);
-        
-        // 범례 이미지 요청을 위한 URL 생성
-        legendUrl = 'http://localhost/geoserver/cite/wms?' +
-            'service=WMS' +
-            '&VERSION=1.0.0' +
-            '&REQUEST=GetLegendGraphic' +
-            '&LAYER=cite:shinjinviewbjd' +
-            '&FORMAT=image/png' +
-            '&WIDTH=80' +
-            '&HEIGHT=20';
-        
-        // 범례 이미지를 추가할 HTML <img> 엘리먼트를 생성합니다.
-        legendImg = document.createElement('img');
-        legendImg.src = legendUrl;
-        
-        // 범례 이미지를 범례 컨테이너에 추가합니다.
-        legendContainer.appendChild(legendImg);
-    }
-    */
 
     function removeLegend2() {
         // 범례 이미지 삭제
@@ -440,6 +430,8 @@ $(document).ready(function(){  //
             
             var geom = values[1]; // x 좌표
             //alert("sido 좌표값" + sido);
+            
+            // 문자열에서 POINT(x y) 형식의 좌표를 추출
             var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
 	        var matches = regex.exec(geom);
 	        var xCoordinate, yCoordinate;
@@ -457,26 +449,6 @@ $(document).ready(function(){  //
             map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
             map.getView().setZoom(10); // 중심좌표 기준으로 줌 설정
 			/////////////////---------------------///////////////// 좌표 이동 및 줌 기능 end
-			
-           /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 검색버튼 클릭시 구현으로 변경
-    	  // 레이어 추가하기
-  	      var sdLayer = new ol.layer.Tile({
-  	         source : new ol.source.TileWMS({
-  	            url : 'http://localhost/geoserver/wms?service=WMS', // 1. 레이어 URL
-  	            params : {
-  	               'VERSION' : '1.1.0', // 2. 버전
-  	               'LAYERS' : 'cite:tl_sd', // 3. 작업공간:레이어 명
-  	               'CQL_FILTER': cqlFilterSd,  
-  	               'BBOX' : '1.3871489341071218E7, 3910407.083927817, 1.4680011171788167E7, 4666488.829376997',
-  	               'SRS' : 'EPSG:3857', // SRID
-  	               'FORMAT' : 'image/png' // 포맷
-  	            },
-  	            serverType : 'geoserver',
-  	         })
-  	      });
-    	      
-    	  map.addLayer(sdLayer); // 맵 객체에 레이어를 추가함
-    	  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@	*/ 
     		
 	 	 // AJAX 요청 보내기
 	     $.ajax({
@@ -491,8 +463,9 @@ $(document).ready(function(){  //
 	             sggSelect.html("<option>--시/군/구를 선택하세요--</option>");
 	             bjdSelect = $("#bjdSelect");
 	             bjdSelect.html("<option>--동/읍/면을 선택하세요--</option>");
-			     alert(response);
-			     alert(response.length);
+			     //alert(response);
+			     console.log(response);
+			     //alert(response.length);
 	             //var lists = JSON.parse(response);
 	             for(var i = 0; i < response.length; i++) {
 	                 var item = response[i];
@@ -505,15 +478,6 @@ $(document).ready(function(){  //
 	                 // console.error("AJAX 요청 실패:", error);
 	             }
 	     	});
-    	  
-    	// bjd까지 다 선택 후 sido를 다시 고를때 리셋해주기
-    	/*
-  		if ($('#bjdSelect').val()) {
-	        // #bjdSelect가 선택된 상태라면 값을 리셋
-	        $('#bjdSelect').val('').trigger('change');
-		}
-    	*/
-    	  
 	   }); 
 		// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< sgg
 	   
@@ -543,7 +507,6 @@ $(document).ready(function(){  //
          var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
 	        var matches = regex.exec(geom);
 	        var xCoordinate, yCoordinate;
-	     	alert(matches);
 	        
 	        if (matches) {
 	            xCoordinate = parseFloat(matches[1]); // x 좌표
@@ -556,40 +519,19 @@ $(document).ready(function(){  //
          map.getView().setZoom(11); // 중심좌표 기준으로 줌 설정
 		/////////////////---------------------///////////////// 좌표 이동 및 줌 기능 end
 	
-	   /* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 검색버튼 클릭시 구현으로 변경	
-   	 // 레이어 추가하기
-   	 alert(cqlFilterSgg);
-   	      var sggLayer = new ol.layer.Tile({
-   	         source : new ol.source.TileWMS({
-   	            url : 'http://localhost/geoserver/wms?service=WMS', // 1. 레이어 URL
-   	            params : {
-   	               'VERSION' : '1.1.0', // 2. 버전
-   	               'LAYERS' : 'cite:tl_sgg', // 3. 작업공간:레이어 명
-   	               'CQL_FILTER': cqlFilterSgg,
-   	               'BBOX' : '1.386872E7, 3906626.5, 1.4428071E7, 4670269.5',
-   	               'SRS' : 'EPSG:3857', // SRID
-   	               'FORMAT' : 'image/png' // 포맷
-   	            },
-   	            serverType : 'geoserver',
-   	         })
-   	      });
-   	     // map.addLayer(sggLayer); // 맵 객체에 레이어를 추가함
-   	      @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
-   	     
-   	   //alert(selectSggValue);
-   	      //alert("돼냐?");
    		// AJAX 요청 보내기
    		$.ajax({
 			   type: 'POST', // 또는 "GET", 요청 방식 선택
 	           url: '/bjgSelect.do', // 컨트롤러의 URL 입력
 	           data: { 'sgg': selectSggValue },  //선택된 값 전송
 	           dataType: 'json',
+	           contentType : 'application/json; charset=UTF-8',
 	         success: function(response) {
 	              // 성공 시 수행할 작업
 	              bjdSelect = $("#bjdSelect");
 	              bjdSelect.html("<option>--동/읍/면을 선택하세요--</option>");
-				  alert(response);
-				  alert(response.length);
+				  //alert(response);
+				  //alert(response.length);
 	              for(var i = 0; i < response.length; i++) {
 	                  var item = response[i];
 	                  bjdSelect.append("<option value='" + item.bjd_cd + "," + item.geom + "'>" + item.bjd_nm + "</option>");
@@ -597,16 +539,15 @@ $(document).ready(function(){  //
 	        	   },
 	        	   error: function(xhr, status, error) {
 	                  // 에러 발생 시 수행할 작업
-	                  // console.error("AJAX 요청 실패:", error);
+	                  console.error("AJAX 요청 실패:", error);
 	              }
 		     	});
-		     }); // changefunction end
+		     }); //
    			// AJAX끝
 	   
 	   // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<bjd
 	   $('#bjdSelect').change(function(){
 		   var selectBjdValue = $(this).val().split(',')[0];
-	   		alert(selectBjdValue);
 	   		
 	   	    // loc 값이 있을 경우에만 CQL 필터 생성
 	   	    if (selectBjdValue && selectBjdValue.length > 0) {
@@ -614,7 +555,6 @@ $(document).ready(function(){  //
 	   	    } else {
 	   	        cqlFilterBjd = ""; // loc 값이 없는 경우, 빈 문자열로 설정
 	   	    }
-	   	    //alert(cqlFilterBjd);
 		   	    
 		   	 if(bjdLayer) {
 	             map.removeLayer(bjdLayer);
@@ -627,7 +567,7 @@ $(document).ready(function(){  //
 	         bjdcd = values[0]; // sido 코드
 	         
 	         var geom = values[1]; // x 좌표
-	         //alert("sido 좌표값" + sido); 얜 가져옴
+	         //alert("sido 좌표값" + sido);
 	         var regex = /POINT\(([-+]?\d+\.\d+) ([-+]?\d+\.\d+)\)/;
 		        var matches = regex.exec(geom);
 		        var xCoordinate, yCoordinate;
@@ -643,42 +583,8 @@ $(document).ready(function(){  //
 	         map.getView().setCenter(sidoCenter); // 중심좌표 기준으로 보기
 	         map.getView().setZoom(13); // 중심좌표 기준으로 줌 설정
 			/////////////////---------------------///////////////// 좌표 이동 및 줌 기능 end
-			
-		/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 검색버튼 클릭시 구현으로 변경
-	   	 // 레이어 추가하기
-	   	 alert(cqlFilterBjd);
-	   	      var bjdLayer = new ol.layer.Tile({
-	   	         source : new ol.source.TileWMS({
-	   	            url : 'http://localhost/geoserver/wms?service=WMS', // 1. 레이어 URL
-	   	            params : {
-	   	               'VERSION' : '1.1.0', // 2. 버전
-	   	               'LAYERS' : 'cite:tl_bjd', // 3. 작업공간:레이어 명
-	   	               'CQL_FILTER': cqlFilterBjd,  
-	   	               'BBOX' : '1.3873946E7, 3906626.5, 1.4428045E7, 4670269.5',
-	   	               'SRS' : 'EPSG:3857', // SRID
-	   	               'FORMAT' : 'image/png' // 포맷
-	   	            },
-	   	            serverType : 'geoserver',
-	   	         })
-	   	      });
-	   	    //  map.addLayer(bjdLayer); // 맵 객체에 레이어를 추가함
-	   	    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
-	   	    
-	   	    //------------------------------------------------------
-	   	    
-	   	    
-	   	    
-	   	    //------------------------------------------------------
-	   	    
 	   });
-}); //
-
-// 팝업 닫기 버튼에 이벤트 리스너 추가
-popupCloser.onclick = function() {
-  overlay.setPosition(undefined); // 팝업을 지도에서 제거
-  return false; // 이벤트 전파 방지
-};
-
+});
 </script>
 
 <style type="text/css">
@@ -689,35 +595,36 @@ popupCloser.onclick = function() {
     border: 1px solid #ccc;
     padding: 5px;
     position: absolute;
-    top: 10px; /* 적절한 위치로 조정하세요 */
-    left: 10px; /* 적절한 위치로 조정하세요 */
-    z-index: 1000; /* 맵 위에 올려서 다른 요소보다 앞에 표시됩니다 */
+    top: 10px;
+    left: 10px;
+    z-index: 1000; /* 맵 제일 앞에 표시됩니다 */
 }
 
 .legend-container {
     position: absolute;
-    top: 100px; /* 맵 상단으로부터의 거리를 조절합니다. */
-    left: 700px; /* 맵 왼쪽으로부터의 거리를 조절합니다. */
-    z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 설정합니다. */
+    top: 100px;
+    left: 700px;
+    z-index: 1000;
 }
 
  /* 폰트 스타일 */
   body {
-    font-family: 'Arial', sans-serif; /* 여기에 사용할 원하는 폰트 이름을 넣어주세요 */
+    font-family: 'Arial', sans-serif;
   }
   
   /* 팝업 스타일 */
   .popup {
+    display: none; /* 처음에는 숨김 */
     position: relative;
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
     padding: 20px;
-    width: 250px; /* 가로폭 조정 */
+    width: 250px;
     font-size: 16px;
-    color: #333; /* 폰트 색상 */
-    line-height: 1.5; /* 줄간격 조정 */
-    font-weight: bold; /* 폰트 굵기 */
+    color: #333;
+    line-height: 1.5;
+    font-weight: bold;
   }
 
   /* 팝업 닫기 버튼 스타일 */
@@ -725,16 +632,16 @@ popupCloser.onclick = function() {
     position: absolute;
     top: 5px;
     right: 5px;
-    font-size: 20px; /* X 아이콘 크기 */
-    color: #888; /* X 아이콘 색상 */
+    font-size: 20px;
+    color: #888;
     text-decoration: none;
     transition: color 0.3s ease;
-    font-weight: bold; /* 폰트 굵기 */
-    line-height: 1; /* 세로 정렬 */
+    font-weight: bold;
+    line-height: 1; /*
   }
 
   .popup-closer:hover {
-    color: #555; /* 호버 시 색상 변경 */
+    color: #555;
   }
 </style>
 
@@ -767,6 +674,10 @@ popupCloser.onclick = function() {
 	   
 	   <div>
 	   		<button id="searchBtn" name="searchBtn" type="button">레이어 띄우기</button>
+	   </div>
+	   
+	   <div>
+	   		<button id="resetBtn" name="resetBtn" type="button">레이어 초기화</button>
 	   </div>
 	   
 	   <!-- 팝업을 나타내는 HTML 요소 -->
